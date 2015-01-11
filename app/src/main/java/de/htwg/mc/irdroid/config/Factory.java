@@ -29,7 +29,7 @@ public interface Factory {
      * Provide access to the Exercise Repository
      * @return The Exercise Repository
      */
-    Repository<Device> provideExercise();
+    Repository<Device> provideDevice();
 
 //    /**
 //     * Provide access to the Therapyplan Repository

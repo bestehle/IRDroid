@@ -32,7 +32,7 @@ public class CbFactory implements Factory {
     }
 
     @Override
-    public Repository<Device> provideExercise() {
+    public Repository<Device> provideDevice() {
         return deviceRepository;
     }
 }
