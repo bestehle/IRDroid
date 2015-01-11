@@ -8,4 +8,31 @@
     <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send Power"
+        android:id="@+id/button_send"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:onClick="sendPower" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Log Devices"
+        android:id="@+id/button_logDevices"
+        android:layout_below="@+id/button_send"
+        android:layout_centerHorizontal="true"
+        android:onClick="logDevices"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send Vol+"
+        android:id="@+id/button_volUp"
+        android:layout_below="@+id/button_logDevices"
+        android:layout_centerHorizontal="true"
+        android:onClick="sendVolPlus" />
+
 </RelativeLayout>
