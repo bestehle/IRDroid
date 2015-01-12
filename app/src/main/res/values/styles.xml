@@ -1,8 +1,6 @@
 <resources>
-
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <!-- your theme inherits from the material theme -->
+    <style name="AppTheme" parent="android:Theme.Material">
+        <!-- theme customizations -->
     </style>
-
 </resources>
