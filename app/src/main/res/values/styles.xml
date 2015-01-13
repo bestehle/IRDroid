@@ -1,6 +1,6 @@
 <resources>
     <!-- your theme inherits from the material theme -->
-    <style name="AppTheme" parent="android:Theme.Material">
+    <style name="AppTheme" parent="android:Theme.DeviceDefault">
         <!-- theme customizations -->
     </style>
 </resources>

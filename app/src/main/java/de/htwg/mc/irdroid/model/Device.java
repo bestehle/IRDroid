@@ -3,34 +3,57 @@ package de.htwg.mc.irdroid.model;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by armin on 10/01/15.
- */
-public class Device {
-    /**
-     * name or description of device
-     */
-    private String description;
-    private Map<CommandType, Command> commandMap = new HashMap<>();
+public class Device extends BaseModel {
+	private String name;
+    private Map<CommandType, Command> commandMap;
 
-    public Device(CommandType commandType, Command command) {
+    public Device() {
+        // intentionally empty
+    }
+
+	public Device(String name) {
+		this.name = name;
+        this.commandMap = new HashMap<>();
+	}
+
+    public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+    public void addCommand(CommandType commandType, Command command) {
         commandMap.put(commandType, command);
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public Command getCommand(CommandType commandType) {
+        return commandMap.get(commandType);
     }
 
     public Map<CommandType, Command> getCommandMap() {
         return commandMap;
     }
 
-    public void setCommandMap(Map<CommandType, Command> commandMap) {
-        this.commandMap = commandMap;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Device device = (Device) o;
+
+        if (!commandMap.equals(device.commandMap)) return false;
+        if (!name.equals(device.name)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + commandMap.hashCode();
+        return result;
     }
 
     /**
