@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.htwg.mc.irdroid.config.Factory;
-import de.htwg.mc.irdroid.config.Provider;
 import de.htwg.mc.irdroid.database.Repository;
 import de.htwg.mc.irdroid.database.implementation.repository.mock.MockConnector;
 import de.htwg.mc.irdroid.database.implementation.repository.mock.MockRepository;
@@ -67,7 +66,19 @@ public class MockWithDataFactory implements Factory {
                 + " 0015 0015 0040 0015 0015 0015 003f 0015 003f 0015 003f 0015 003f 0015 003f 0015 003f 0015 0702"
                 + " 00a9 00a8 0015 0015 0015 0e6e";
 
-        List<String> list = new ArrayList<>(Arrays.asList(power.split(" ")));
+        String volUp = "0000 006d 0022 0003 00a9 00a8 0015 003f 0015 003f" +
+                " 0015 003f 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 003f 0015 003f" +
+                " 0015 003f 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 003f 0015 003f" +
+                " 0015 003f 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015" +
+                " 0015 0015 0015 003f 0015 003f 0015 003f 0015 003f 0015 003f 0015 0702 00a9 00a8" +
+                " 0015 0015 0015 0e6e";
+
+        addCommand(Device.CommandType.power, power);
+        addCommand(Device.CommandType.volumeUp, volUp);
+    }
+
+    private void addCommand(Device.CommandType commandType, String commandString) {
+        List<String> list = new ArrayList<>(Arrays.asList(commandString.split(" ")));
         list.remove(0); // dummy
         int frequency = (int) (1000000 / ((Integer.parseInt(list.remove(0), 16) * 0.241246)));
         list.remove(0); // seq1
@@ -81,9 +92,9 @@ public class MockWithDataFactory implements Factory {
 
         Command command = new Command(frequency, pattern);
         Device device = new Device("BenQ");
-        device.addCommand(Device.CommandType.power, command);
+        device.addCommand(commandType, command);
 
         deviceRepository.create(device);
-    }
 
+    }
 }

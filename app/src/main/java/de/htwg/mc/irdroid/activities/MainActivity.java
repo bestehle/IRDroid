@@ -129,7 +129,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     private void channelDown() {
         Command command = commandMap.get(Device.CommandType.channelDown);
-        
+
     }
 
     private void channelUp() {
