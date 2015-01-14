@@ -8,5 +8,6 @@
     <string name="button_minus">-</string>
     <string name="button_digits">123</string>
     <string name="button_power">On / Off</string>
+    <string name="title_activity_manage_device">ManageDeviceActivity</string>
 
 </resources>

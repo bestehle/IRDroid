@@ -56,13 +56,13 @@
         android:text="Log Devices"
         android:id="@+id/button_logDevices"
         android:onClick="logDevices"
-        android:layout_above="@+id/spinner"
+        android:layout_above="@+id/spinner_devices"
         android:layout_centerHorizontal="true" />
 
     <Spinner
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/spinner"
+        android:id="@+id/spinner_devices"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true" />
 

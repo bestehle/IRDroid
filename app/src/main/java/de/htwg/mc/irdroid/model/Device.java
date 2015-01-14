@@ -56,6 +56,11 @@ public class Device extends BaseModel {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
+
     /**
      * type of specific command
      */
