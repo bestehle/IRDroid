@@ -60,11 +60,4 @@ public class Device extends BaseModel {
     public String toString() {
         return name;
     }
-
-    /**
-     * type of specific command
-     */
-    public enum CommandType {
-        power, volumeUp, volumeDown, channelUp, channelDown, digits, other
-    }
 }

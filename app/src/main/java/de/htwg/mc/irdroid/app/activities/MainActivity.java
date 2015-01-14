@@ -20,6 +20,7 @@ import de.htwg.mc.irdroid.config.Provider;
 import de.htwg.mc.irdroid.database.Repository;
 import de.htwg.mc.irdroid.database.implementation.specification.DeviceAllSpecification;
 import de.htwg.mc.irdroid.model.Command;
+import de.htwg.mc.irdroid.model.CommandType;
 import de.htwg.mc.irdroid.model.Device;
 
 
@@ -27,41 +28,59 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     private IrController ir;
 
-    private Map<Device.CommandType, Command> commandMap;
+    private Map<CommandType, Command> commandMap;
     private Repository<Device> deviceRepository;
     private List<Device> devices;
+    private Button bPower;
+    private Button bVolumeUp;
+    private Button bVolumeDown;
+    private Button bChannelUp;
+    private Button bChannelDown;
+    private Button bDigits;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         ir = new IrController(this);
 
-        Button bPower = (Button) findViewById(R.id.bPower);
+        bPower = (Button) findViewById(R.id.bPower);
         bPower.setOnClickListener(this);
-        Button bVolumeUp = (Button) findViewById(R.id.bVolUp);
+        bVolumeUp = (Button) findViewById(R.id.bVolUp);
         bVolumeUp.setOnClickListener(this);
-        Button bVolumeDown = (Button) findViewById(R.id.bVolDown);
+        bVolumeDown = (Button) findViewById(R.id.bVolDown);
         bVolumeDown.setOnClickListener(this);
-        Button bChannelUp = (Button) findViewById(R.id.bChannelUp);
+        bChannelUp = (Button) findViewById(R.id.bChannelUp);
         bChannelUp.setOnClickListener(this);
-        Button bChannelDown = (Button) findViewById(R.id.bChannelDown);
+        bChannelDown = (Button) findViewById(R.id.bChannelDown);
         bChannelDown.setOnClickListener(this);
-        Button bDigits = (Button) findViewById(R.id.bDigits);
+        bDigits = (Button) findViewById(R.id.bDigits);
         bDigits.setOnClickListener(this);
 
         deviceRepository = Provider.getInstance().getFactory().provideDevice();
         devices = deviceRepository.read(new DeviceAllSpecification());
 
+        updateView();
+    }
+
+    private void updateView() {
         Spinner deviceSpinner = (Spinner) findViewById(R.id.spinner_devices);
         ArrayAdapter<Device> adapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, devices);
         //adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         deviceSpinner.setAdapter(adapter);
+
         Device device = (Device) deviceSpinner.getSelectedItem();
 
         commandMap = device.getCommandMap();
-    }
 
+        bPower.setEnabled(commandMap.containsKey(CommandType.power));
+        bVolumeUp.setEnabled(commandMap.containsKey(CommandType.volumeUp));
+        bVolumeDown.setEnabled(commandMap.containsKey(CommandType.volumeDown));
+        bChannelUp.setEnabled(commandMap.containsKey(CommandType.channelUp));
+        bChannelDown.setEnabled(commandMap.containsKey(CommandType.channelDown));
+        bDigits.setEnabled(commandMap.containsKey(CommandType.digits));
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -90,21 +109,22 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
+        Command command = null;
         switch (v.getId()) {
             case R.id.bPower:
-                power();
+                command = commandMap.get(CommandType.power);
                 break;
             case R.id.bVolUp:
-                volumeUp();
+                command = commandMap.get(CommandType.volumeUp);
                 break;
             case R.id.bVolDown:
-                volumeDown();
+                command = commandMap.get(CommandType.volumeDown);
                 break;
             case R.id.bChannelUp:
-                channelUp();
+                command = commandMap.get(CommandType.channelUp);
                 break;
             case R.id.bChannelDown:
-                channelDown();
+                command = commandMap.get(CommandType.channelDown);
                 break;
            /* case R.id.bDigits:
                 showDigitsField();
@@ -114,14 +134,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 break;
         }
 
-    }
+        if (command != null) {
+            ir.sendCode(command.getFrequency(), command.getIrCommand());
+        }
 
-    public void sendPower(View view) {
-        ir.sendCode(IrController.POWER);
-    }
-
-    public void sendVolPlus(View view) {
-        ir.sendCode(IrController.VOL_PLUS);
     }
 
     public void logDevices(View view) {
@@ -132,29 +148,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         }
     }
 
-    protected void power() {
-        Command command = commandMap.get(Device.CommandType.power);
-        ir.sendCode(command.getFrequency(), command.getIrCommand());
-    }
-
-    private void channelDown() {
-        Command command = commandMap.get(Device.CommandType.channelDown);
-
-    }
-
-    private void channelUp() {
-        Command command = commandMap.get(Device.CommandType.channelUp);
-    }
-
-    protected void volumeUp() {
-        Command command = commandMap.get(Device.CommandType.volumeUp);
-    }
-
-    protected void volumeDown() {
-        Command command = commandMap.get(Device.CommandType.volumeDown);
-    }
-
     private void showDigitsField() {
-        Command command = commandMap.get(Device.CommandType.digits);
+        Command command = commandMap.get(CommandType.digits);
     }
 }

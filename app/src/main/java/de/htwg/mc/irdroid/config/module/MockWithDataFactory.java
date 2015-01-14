@@ -11,6 +11,7 @@ import de.htwg.mc.irdroid.database.Repository;
 import de.htwg.mc.irdroid.database.implementation.repository.mock.MockConnector;
 import de.htwg.mc.irdroid.database.implementation.repository.mock.MockRepository;
 import de.htwg.mc.irdroid.model.Command;
+import de.htwg.mc.irdroid.model.CommandType;
 import de.htwg.mc.irdroid.model.Device;
 
 /**
@@ -33,12 +34,6 @@ public class MockWithDataFactory implements Factory {
 
         generateDummyCommands();
 
-        /*deviceRepository.create(new Device("Sony TV"));
-        deviceRepository.create(new Device("LG TV"));
-        deviceRepository.create(new Device("Samsung TV"));
-        deviceRepository.create(new Device("Beamer"));
-*/
-
         // logout here
         connector.logout();
     }
@@ -60,31 +55,45 @@ public class MockWithDataFactory implements Factory {
 
     private void generateDummyCommands() {
 
-       String power = "0000 006d 0022 0003 00a9 00a8 0015 003f 0015 003f 0015 003f 0015 0015 0015"
+        String samsungPower = "0000 006d 0022 0003 00a9 00a8 0015 003f 0015 003f 0015 003f 0015 0015 0015"
                 + " 0015 0015 0015 0015 0015 0015 0015 0015 003f 0015 003f 0015 003f 0015 0015 0015 0015 0015 0015"
                 + " 0015 0015 0015 0015 0015 0015 0015 003f 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015"
                 + " 0015 0015 0040 0015 0015 0015 003f 0015 003f 0015 003f 0015 003f 0015 003f 0015 003f 0015 0702"
                 + " 00a9 00a8 0015 0015 0015 0e6e";
 
-        /*
-        Hitachi Beamer G151 ;-)
-        String power = ""+
-        poweron:  "0000 006d 0022 0002 0156 00aa 0016 0040 0016 0040 0016 0040 0016 0016 0016 0016 0016 0016 0016 0016 0016 0040 0016 0040 0016 0016 0016 0040 0016 0016 0016 0016 0016 0016 0016 0040 0016 0016 0016 0040 0016 0016 0016 0040 0016 0040 0016 0040 0016 0016 0016 0016 0016 0016 0016 0016 0016 0040 0016 0016 0016 0016 0016 0016 0016 0040 0016 0040 0016 0040 0016 0638 0156 0055 0016 0e64";
-        poweroff: "0000 006d 0022 0002 0156 00aa 0016 0040 0016 0040 0016 0040 0016 0016 0016 0016 0016 0016 0016 0016 0016 0040 0016 0040 0016 0016 0016 0040 0016 0016 0016 0016 0016 0016 0016 0040 0016 0016 0016 0016 0016 0040 0016 0040 0016 0040 0016 0040 0016 0016 0016 0016 0016 0016 0016 0040 0016 0016 0016 0016 0016 0016 0016 0016 0016 0040 0016 0040 0016 0040 0016 0638 0156 0055 0016 0e64";
-        */
-
-        String volUp = "0000 006d 0022 0003 00a9 00a8 0015 003f 0015 003f" +
+        String samsungVolUp = "0000 006d 0022 0003 00a9 00a8 0015 003f 0015 003f" +
                 " 0015 003f 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 003f 0015 003f" +
                 " 0015 003f 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 003f 0015 003f" +
                 " 0015 003f 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015" +
                 " 0015 0015 0015 003f 0015 003f 0015 003f 0015 003f 0015 003f 0015 0702 00a9 00a8" +
                 " 0015 0015 0015 0e6e";
 
-        addCommand(Device.CommandType.power, power);
-        addCommand(Device.CommandType.volumeUp, volUp);
+        Device samsung = deviceRepository.create(new Device("Samsung"));
+        addCommand(samsung, CommandType.power, samsungPower);
+        addCommand(samsung, CommandType.volumeUp, samsungVolUp);
+
+        /*
+        Hitachi Beamer G151 ;-)
+        String power = ""+
+        poweron:  "0000 006d 0022 0002 0156 00aa 0016 0040 0016 0040 0016 0040 0016 0016 0016 0016 0016 0016 0016 0016 0016 0040 0016 0040 0016 0016 0016 0040 0016 0016 0016 0016 0016 0016 0016 0040 0016 0016 0016 0040 0016 0016 0016 0040 0016 0040 0016 0040 0016 0016 0016 0016 0016 0016 0016 0016 0016 0040 0016 0016 0016 0016 0016 0016 0016 0040 0016 0040 0016 0040 0016 0638 0156 0055 0016 0e64";
+        */
+        String hitachiPoweroff = "0000 006d 0022 0002 0156 00aa 0016 0040 0016 0040 0016 0040 " +
+                "0016 0016 0016 0016 0016 0016 0016 0016 0016 0040 0016 0040 0016 0016 0016 0040 " +
+                "0016 0016 0016 0016 0016 0016 0016 0040 0016 0016 0016 0016 0016 0040 0016 0040 " +
+                "0016 0040 0016 0040 0016 0016 0016 0016 0016 0016 0016 0040 0016 0016 0016 0016 " +
+                "0016 0016 0016 0016 0016 0040 0016 0040 0016 0040 0016 0638 0156 0055 0016 0e64";
+
+        Device hitachi = deviceRepository.create(new Device("Hitachi Beamer"));
+        addCommand(hitachi, CommandType.power, hitachiPoweroff);
+
+
+       /*deviceRepository.create(new Device("Sony TV"));
+        deviceRepository.create(new Device("LG TV"));
+        deviceRepository.create(new Device("Beamer"));*/
+
     }
 
-    private void addCommand(Device.CommandType commandType, String commandString) {
+    private void addCommand(Device device, CommandType commandType, String commandString) {
         List<String> list = new ArrayList<>(Arrays.asList(commandString.split(" ")));
         list.remove(0); // dummy
         int frequency = (int) (1000000 / ((Integer.parseInt(list.remove(0), 16) * 0.241246)));
@@ -98,10 +107,8 @@ public class MockWithDataFactory implements Factory {
         }
 
         Command command = new Command(frequency, pattern);
-        Device device = new Device("BenQ");
         device.addCommand(commandType, command);
 
-        deviceRepository.create(device);
-
+        deviceRepository.update(device);
     }
 }
