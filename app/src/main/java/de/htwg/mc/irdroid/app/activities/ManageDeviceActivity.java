@@ -354,6 +354,11 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
         }
     }
 
+    /**
+     * split command string into int[] pattern and add it to the current device
+     *
+     * @param commandString command string to add
+     */
     private void addCommandToCurrentDevice(String commandString) {
         List<String> list = new ArrayList<>(Arrays.asList(commandString.split(" ")));
         list.remove(0); // dummy
@@ -374,7 +379,6 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        Log.wtf(TAG, " ---------- ");
         device = (Device) parent.getSelectedItem();
         Log.d(TAG, "selected device " + device.getName());
     }

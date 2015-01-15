@@ -1,4 +1,5 @@
 <resources>
+
     <style name="AppTheme.Theme" parent="Base.V7.Theme.AppCompat.Light">
         <!-- colorPrimary is used for the default action bar background -->
         <item name="colorPrimary">@color/background_material_dark</item>
@@ -8,12 +9,19 @@
 
         <!-- colorAccent is used as the default value for colorControlActivated
              which is used to tint widgets -->
-        <item name="colorAccent">@color/accent_material_light</item>
+        <item name="colorAccent">@color/accent_material_dark</item>
 
         <item name="android:textColor">@color/abc_primary_text_material_light</item>
 
         <!-- You can also set colorControlNormal, colorControlActivated
              colorControlHighlight & colorSwitchThumbNormal. -->
+    </style>
 
+    <style name="Theme.ActionBarStyle" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:titleTextStyle">@style/Theme.ActionBar.TitleTextStyle</item>
+    </style>
+
+    <style name="Theme.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/abc_primary_text_material_dark</item>
     </style>
 </resources>

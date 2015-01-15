@@ -10,7 +10,7 @@
 
     <item
         android:id="@+id/secure_connect_scan"
-        android:icon="@drawable/ic_action_device_access_bluetooth_searching"
+        android:icon="@drawable/ic_action_bluetooth_searching"
         app:showAsAction="ifRoom"
         android:title="@string/secure_connect"/>
 
