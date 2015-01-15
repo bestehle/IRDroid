@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -24,7 +25,8 @@ import de.htwg.mc.irdroid.model.CommandType;
 import de.htwg.mc.irdroid.model.Device;
 
 
-public class MainActivity extends ActionBarActivity implements View.OnClickListener {
+public class MainActivity extends ActionBarActivity implements AdapterView.OnItemSelectedListener, View.OnClickListener {
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private IrController ir;
 
@@ -37,6 +39,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private Button bChannelUp;
     private Button bChannelDown;
     private Button bDigits;
+    private Device device;
+    private Spinner deviceSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,20 +61,23 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         bChannelDown.setOnClickListener(this);
         bDigits = (Button) findViewById(R.id.bDigits);
         bDigits.setOnClickListener(this);
+        deviceSpinner = (Spinner) findViewById(R.id.spinner_devices);
+        deviceSpinner.setOnItemSelectedListener(this);
 
         deviceRepository = Provider.getInstance().getFactory().provideDevice();
-        devices = deviceRepository.read(new DeviceAllSpecification());
 
         updateView();
     }
 
     private void updateView() {
-        Spinner deviceSpinner = (Spinner) findViewById(R.id.spinner_devices);
-        ArrayAdapter<Device> adapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, devices);
-        //adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        deviceSpinner.setAdapter(adapter);
-
-        Device device = (Device) deviceSpinner.getSelectedItem();
+        List<Device> tDevices = deviceRepository.read(new DeviceAllSpecification());
+        if (devices == null || devices.size() != tDevices.size()) {
+            devices = deviceRepository.read(new DeviceAllSpecification());
+            ArrayAdapter<Device> adapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, devices);
+            //adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+            deviceSpinner.setAdapter(adapter);
+            device = (Device) deviceSpinner.getSelectedItem();
+        }
 
         commandMap = device.getCommandMap();
 
@@ -112,19 +119,19 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         Command command = null;
         switch (v.getId()) {
             case R.id.bPower:
-                command = commandMap.get(CommandType.power);
+                command = device.getCommand(CommandType.power);
                 break;
             case R.id.bVolUp:
-                command = commandMap.get(CommandType.volumeUp);
+                command = device.getCommand(CommandType.volumeUp);
                 break;
             case R.id.bVolDown:
-                command = commandMap.get(CommandType.volumeDown);
+                command = device.getCommand(CommandType.volumeDown);
                 break;
             case R.id.bChannelUp:
-                command = commandMap.get(CommandType.channelUp);
+                command = device.getCommand(CommandType.channelUp);
                 break;
             case R.id.bChannelDown:
-                command = commandMap.get(CommandType.channelDown);
+                command = device.getCommand(CommandType.channelDown);
                 break;
            /* case R.id.bDigits:
                 showDigitsField();
@@ -150,5 +157,19 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     private void showDigitsField() {
         Command command = commandMap.get(CommandType.digits);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        device = (Device) parent.getSelectedItem();
+        Log.d(TAG, "selected device " + device.getName());
+        updateView();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        device = null;
+        Log.d(TAG, "no device selected");
+        updateView();
     }
 }

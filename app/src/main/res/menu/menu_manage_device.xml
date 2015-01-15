@@ -8,6 +8,21 @@
         android:title="@string/menu_add_new_device"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/secure_connect_scan"
+        android:icon="@drawable/ic_action_device_access_bluetooth_searching"
+        app:showAsAction="ifRoom"
+        android:title="@string/secure_connect"/>
+
+    <item
+        android:id="@+id/insecure_connect_scan"
+        app:showAsAction="never"
+        android:title="@string/insecure_connect"/>
+
+    <item
+        android:id="@+id/discoverable"
+        app:showAsAction="never"
+        android:title="@string/discoverable"/>
     <!--<item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />-->
 </menu>
