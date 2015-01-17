@@ -17,6 +17,7 @@ import java.util.Map;
 
 import de.htwg.mc.irdroid.R;
 import de.htwg.mc.irdroid.app.IrController;
+import de.htwg.mc.irdroid.app.bluetooth.ManageDeviceActivity;
 import de.htwg.mc.irdroid.config.Provider;
 import de.htwg.mc.irdroid.database.Repository;
 import de.htwg.mc.irdroid.database.implementation.specification.DeviceAllSpecification;

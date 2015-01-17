@@ -1,15 +1,21 @@
-package de.htwg.mc.irdroid.app.activities;
+package de.htwg.mc.irdroid.app.bluetooth;
 
-import android.support.v7.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattService;
+import android.bluetooth.BluetoothManager;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.os.IBinder;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -23,12 +29,12 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import de.htwg.mc.irdroid.R;
-import de.htwg.mc.irdroid.app.bluetooth.BluetoothService;
-import de.htwg.mc.irdroid.app.bluetooth.Constants;
-import de.htwg.mc.irdroid.app.bluetooth.DeviceListActivity;
 import de.htwg.mc.irdroid.config.Provider;
 import de.htwg.mc.irdroid.database.Repository;
 import de.htwg.mc.irdroid.database.implementation.specification.DeviceAllSpecification;
@@ -39,20 +45,19 @@ import de.htwg.mc.irdroid.model.Device;
 public class ManageDeviceActivity extends ActionBarActivity implements AdapterView.OnItemSelectedListener {
     private static final String TAG = ManageDeviceActivity.class.getSimpleName();
 
-    /**
-     * Local Bluetooth adapter
-     */
-    private BluetoothAdapter bluetoothAdapter;
+    private BluetoothAdapter mBluetoothAdapter;
+    private RBLService mBluetoothLeService;
+    private static final int REQUEST_ENABLE_BT = 1;
+    private static final long SCAN_PERIOD = 3000;
+    private Map<UUID, BluetoothGattCharacteristic> map = new HashMap<UUID, BluetoothGattCharacteristic>();
+    public static List<BluetoothDevice> mDevices = new ArrayList<BluetoothDevice>();
 
-    /**
-     * Member object for the chat services
-     */
-    private BluetoothService bluetoothService;
+    private String mDeviceName;
+    private String mDeviceAddress;
 
-    // Intent request codes
+
     private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
     private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
-    private static final int REQUEST_ENABLE_BT = 3;
     /**
      * Name of the connected device
      */
@@ -63,6 +68,70 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
     private Spinner deviceSpinner;
     private CommandType currentCommandType;
 
+    private ServiceConnection mServiceConnection;
+
+    private BroadcastReceiver mGattUpdateReceiver;
+
+    private StringBuilder code = new StringBuilder();
+
+    private void createStuff(Intent data) {
+
+        String address = data.getExtras()
+                .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+        // Get the BluetoothDevice object
+        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+
+        mDeviceName = device.getName();
+        mDeviceAddress = device.getAddress();
+
+        mServiceConnection = new ServiceConnection() {
+
+            @Override
+            public void onServiceConnected(ComponentName componentName,
+                                           IBinder service) {
+                mBluetoothLeService = ((RBLService.LocalBinder) service).getService();
+                if (!mBluetoothLeService.initialize()) {
+                    Log.e(TAG, "Unable to initialize Bluetooth");
+                    finish();
+                }
+                // Automatically connects to the device upon successful start-up
+                // initialization.
+                mBluetoothLeService.connect(mDeviceAddress);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                mBluetoothLeService = null;
+            }
+        };
+
+        mGattUpdateReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                final String action = intent.getAction();
+
+                if (RBLService.ACTION_GATT_DISCONNECTED.equals(action)) {
+                    Log.i(TAG, "Received code: " + code.toString());
+                    Toast.makeText(getBaseContext(), "Received code !", Toast.LENGTH_SHORT);
+                } else if (RBLService.ACTION_GATT_SERVICES_DISCOVERED
+                        .equals(action)) {
+                    getGattService(mBluetoothLeService.getSupportedGattService());
+                } else if (RBLService.ACTION_DATA_AVAILABLE.equals(action)) {
+                    storeData(intent.getByteArrayExtra(RBLService.EXTRA_DATA));
+                }
+            }
+        };
+
+        Intent gattServiceIntent = new Intent(this, RBLService.class);
+        bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+    }
+
+
+    private void storeData(byte[] byteArrayExtra) {
+        Log.e("BLE DATA", new String(byteArrayExtra));
+        code.append(new String(byteArrayExtra));
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,104 +141,70 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
         deviceSpinner.setOnItemSelectedListener(this);
         updateSpinner();
 
-        connectBluetoothAdapter();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // If BT is not on, request that it be enabled.
-        // setupChat() will then be called during onActivityResult
-        if (!bluetoothAdapter.isEnabled()) {
-            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-            // Otherwise, setup the chat session
-        } else if (bluetoothService == null) {
-            //setupChat();
-            setupBluetoothService();
+        final BluetoothManager mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        mBluetoothAdapter = mBluetoothManager.getAdapter();
+        if (mBluetoothAdapter == null) {
+            Toast.makeText(this, "Ble not supported", Toast.LENGTH_SHORT)
+                    .show();
+            finish();
+            return;
         }
+
+        if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(
+                    BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
+
+
     }
 
-    private void setupBluetoothService() {
-        bluetoothService = new BluetoothService(mHandler);
+    private void getGattService(BluetoothGattService gattService) {
+        if (gattService == null)
+            return;
+
+        BluetoothGattCharacteristic characteristic = gattService
+                .getCharacteristic(RBLService.UUID_BLE_SHIELD_TX);
+        map.put(characteristic.getUuid(), characteristic);
+
+        BluetoothGattCharacteristic characteristicRx = gattService
+                .getCharacteristic(RBLService.UUID_BLE_SHIELD_RX);
+        mBluetoothLeService.setCharacteristicNotification(characteristicRx,
+                true);
+        mBluetoothLeService.readCharacteristic(characteristicRx);
     }
+
 
     @Override
-    public void onResume() {
+    protected void onResume() {
         super.onResume();
 
-        // Performing this check in onResume() covers the case in which BT was
-        // not enabled during onStart(), so we were paused to enable it...
-        // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
-        if (bluetoothService != null) {
-            // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (bluetoothService.getState() == BluetoothService.STATE_NONE) {
-                // Start the Bluetooth chat services
-                bluetoothService.start();
-            }
-        }
+        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
     }
 
-    private void connectBluetoothAdapter() {
-        // Get local Bluetooth adapter
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        // If the adapter is null, then Bluetooth is not supported
-        if (bluetoothAdapter == null) {
-            Toast.makeText(this, R.string.fragment_bt_not_available, Toast.LENGTH_LONG).show();
-        }
+    private static IntentFilter makeGattUpdateIntentFilter() {
+        final IntentFilter intentFilter = new IntentFilter();
+
+        intentFilter.addAction(RBLService.ACTION_GATT_CONNECTED);
+        intentFilter.addAction(RBLService.ACTION_GATT_DISCONNECTED);
+        intentFilter.addAction(RBLService.ACTION_GATT_SERVICES_DISCOVERED);
+        intentFilter.addAction(RBLService.ACTION_DATA_AVAILABLE);
+
+        return intentFilter;
     }
 
-    /**
-     * The Handler that gets information back from the BluetoothChatService
-     */
-    private final Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            Log.i(TAG, "MESSAGE received: " + msg.what + " with object: " + msg.obj);
-            switch (msg.what) {
-                case Constants.MESSAGE_STATE_CHANGE:
-                    switch (msg.arg1) {
-                        case BluetoothService.STATE_CONNECTED:
-                            setStatus(getString(R.string.title_connected_to, connectedDeviceName));
-                            break;
-                        case BluetoothService.STATE_CONNECTING:
-                            setStatus(R.string.title_connecting);
-                            break;
-                        case BluetoothService.STATE_LISTEN:
-                        case BluetoothService.STATE_NONE:
-                            setStatus(R.string.title_not_connected);
-                            break;
-                    }
-                    break;
-                case Constants.MESSAGE_WRITE:
-                    byte[] writeBuf = (byte[]) msg.obj;
-                    // construct a string from the buffer
-                    String writeMessage = new String(writeBuf);
-                    Log.i(TAG, "writeMessage" + writeMessage);
-                    break;
-                case Constants.MESSAGE_READ:
-                    byte[] readBuf = (byte[]) msg.obj;
-                    // construct a string from the valid bytes in the buffer
-                    String readMessage = new String(readBuf, 0, msg.arg1);
-                    Log.i(TAG, "readMessage" + readMessage);
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
-                    // TODO check if received string is correct
-                    addCommandToCurrentDevice(readMessage);
-                    break;
-                case Constants.MESSAGE_DEVICE_NAME:
-                    // save the connected device's name
-                    connectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
-                    Toast.makeText(ManageDeviceActivity.this, "Connected to "
-                            + connectedDeviceName, Toast.LENGTH_SHORT).show();
-                    break;
-                case Constants.MESSAGE_TOAST:
-                    Toast.makeText(ManageDeviceActivity.this, msg.getData().getString(Constants.TOAST),
-                            Toast.LENGTH_SHORT).show();
-                    break;
-            }
+        unregisterReceiver(mGattUpdateReceiver);
+
+        if (mBluetoothLeService != null) {
+            mBluetoothLeService.disconnect();
+            mBluetoothLeService.close();
         }
-    };
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -180,65 +215,24 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
                 secure = true;
             case REQUEST_CONNECT_DEVICE_INSECURE:
                 if (resultCode == Activity.RESULT_OK) {
-                    connectDevice(data, secure);
+                    createStuff(data);
                 }
                 break;
-            case REQUEST_ENABLE_BT:
-                // When the request to enable Bluetooth returns
-                if (resultCode == Activity.RESULT_OK) {
-                    // Bluetooth is now enabled, so set up a chat session
-                    setupBluetoothService();
-                } else {
-                    // User did not enable Bluetooth or an error occurred
-                    Log.d(TAG, "BT not enabled");
-                    Toast.makeText(this, R.string.bt_not_enabled_leaving,
-                            Toast.LENGTH_SHORT).show();
-                    //getActivity().finish();
-                }
+//            case REQUEST_ENABLE_BT:
+//                // When the request to enable Bluetooth returns
+//                if (resultCode == Activity.RESULT_OK) {
+//                    // Bluetooth is now enabled, so set up a chat session
+//                    setupBluetoothService();
+//                } else {
+//                    // User did not enable Bluetooth or an error occurred
+//                    Log.d(TAG, "BT not enabled");
+//                    Toast.makeText(this, R.string.bt_not_enabled_leaving,
+//                            Toast.LENGTH_SHORT).show();
+//                    //getActivity().finish();
+//                }
         }
     }
 
-    /**
-     * Establish connection with other device
-     *
-     * @param data   An {@link Intent} with {@link DeviceListActivity#EXTRA_DEVICE_ADDRESS} extra.
-     * @param secure Socket Security type - Secure (true) , Insecure (false)
-     */
-    private void connectDevice(Intent data, boolean secure) {
-        // Get the device MAC address
-        String address = data.getExtras()
-                .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
-        // Get the BluetoothDevice object
-        BluetoothDevice device = bluetoothAdapter.getRemoteDevice(address);
-        // Attempt to connect to the device
-        bluetoothService.connect(device, secure);
-    }
-
-    /**
-     * Updates the status on the action bar.
-     *
-     * @param resId a string resource ID
-     */
-    private void setStatus(int resId) {
-        final ActionBar actionBar = getSupportActionBar();
-        if (null == actionBar) {
-            return;
-        }
-        actionBar.setSubtitle(resId);
-    }
-
-    /**
-     * Updates the status on the action bar.
-     *
-     * @param subTitle status
-     */
-    private void setStatus(CharSequence subTitle) {
-        final ActionBar actionBar = getSupportActionBar();
-        if (null == actionBar) {
-            return;
-        }
-        actionBar.setSubtitle(subTitle);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -279,11 +273,12 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
         }
     }
 
+
     /**
      * Makes this device discoverable.
      */
     private void ensureDiscoverable() {
-        if (bluetoothAdapter.getScanMode() !=
+        if (mBluetoothAdapter.getScanMode() !=
                 BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
             Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
             discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
@@ -345,6 +340,7 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
         switch (view.getId()) {
             case R.id.bManagePower:
                 currentCommandType = CommandType.power;
+                addCommandToCurrentDevice(code.toString());
                 // FIXME wait for connection and data
                 Log.i(TAG, "managing power button for device " + device);
                 break;

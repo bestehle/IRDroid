@@ -6,6 +6,10 @@
         android:name="android.hardware.ConsumerIrManager"
         android:required="true" />
 
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
+
     <uses-permission android:name="android.permission.TRANSMIT_IR" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -25,15 +29,19 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".app.activities.ManageDeviceActivity"
+            android:name=".app.bluetooth.ManageDeviceActivity"
             android:label="@string/title_activity_manage_device"
             android:parentActivityName=".app.activities.MainActivity">
         </activity>
         <activity
             android:name=".app.bluetooth.DeviceListActivity"
             android:label="@string/title_activity_list_device"
-            android:parentActivityName=".app.activities.ManageDeviceActivity" >
+            android:parentActivityName=".app.bluetooth.ManageDeviceActivity" >
         </activity>
+
+        <service
+            android:name=".app.bluetooth.RBLService"
+            android:enabled="true" />
     </application>
 
 </manifest>
