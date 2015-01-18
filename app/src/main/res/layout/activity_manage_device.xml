@@ -14,12 +14,69 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true" />
 
-    <Button
-        android:id="@+id/bManagePower"
+
+    <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:src="@drawable/power_selector"
+        android:background="@null"
+        android:id="@+id/bManagePower"
         android:layout_below="@+id/spinner_manage_device"
         android:layout_centerHorizontal="true"
-        android:text="@string/button_power"
-        android:onClick="attemptSetCommand"/>
+        android:layout_marginTop="20dp" />
+
+    <ImageButton
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/plus_selector"
+        android:background="@null"
+        android:id="@+id/bManageVolUp"
+        android:layout_below="@+id/bManagePower"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp" />
+
+    <ImageButton
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/minus_selector"
+        android:background="@null"
+        android:id="@+id/bManageVolDown"
+        android:layout_below="@+id/bManageVolUp"
+        android:layout_alignStart="@+id/bManageVolUp"
+        android:layout_marginTop="20dp" />
+
+    <ImageButton
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/up_selector"
+        android:background="@null"
+        android:id="@+id/bManageChannelUp"
+        android:layout_alignBottom="@+id/bManageVolUp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="10dp" />
+
+    <ImageButton
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/down_selector"
+        android:background="@null"
+        android:id="@+id/bManageChannelDown"
+        android:layout_alignBottom="@+id/bManageVolDown"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="10dp" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/numbers_selector"
+        android:background="@null"
+        android:id="@+id/bManageDigits"
+        android:layout_below="@+id/bManageVolDown"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
 </RelativeLayout>

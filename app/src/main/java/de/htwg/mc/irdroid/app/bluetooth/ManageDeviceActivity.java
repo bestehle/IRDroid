@@ -334,6 +334,31 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
                 addCommandToCurrentDevice(code.toString());
                 Log.i(TAG, "managing power button for device " + device);
                 break;
+            case R.id.bManageChannelUp:
+                currentCommandType = CommandType.channelUp;
+                addCommandToCurrentDevice(code.toString());
+                Log.i(TAG, "managing up button for device " + device);
+                break;
+            case R.id.bManageChannelDown:
+                currentCommandType = CommandType.channelDown;
+                addCommandToCurrentDevice(code.toString());
+                Log.i(TAG, "managing down button for device " + device);
+                break;
+            case R.id.bManageVolUp:
+                currentCommandType = CommandType.volumeUp;
+                addCommandToCurrentDevice(code.toString());
+                Log.i(TAG, "managing volumeUp button for device " + device);
+                break;
+            case R.id.bManageVolDown:
+                currentCommandType = CommandType.volumeDown;
+                addCommandToCurrentDevice(code.toString());
+                Log.i(TAG, "managing volumeDown button for device " + device);
+                break;
+            case R.id.bManageDigits:
+                currentCommandType = CommandType.digits;
+                addCommandToCurrentDevice(code.toString());
+                Log.i(TAG, "managing digits button for device " + device);
+                break;
             default:
                 Log.i(TAG, "no such button");
                 break;
