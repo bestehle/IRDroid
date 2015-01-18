@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 
 import java.util.List;
@@ -34,12 +35,12 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private Map<CommandType, Command> commandMap;
     private Repository<Device> deviceRepository;
     private List<Device> devices;
-    private Button bPower;
-    private Button bVolumeUp;
-    private Button bVolumeDown;
-    private Button bChannelUp;
-    private Button bChannelDown;
-    private Button bDigits;
+    private ImageButton bPower;
+    private ImageButton bVolumeUp;
+    private ImageButton bVolumeDown;
+    private ImageButton bChannelUp;
+    private ImageButton bChannelDown;
+    private ImageButton bDigits;
     private Device device;
     private Spinner deviceSpinner;
 
@@ -50,17 +51,17 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
         ir = new IrController(this);
 
-        bPower = (Button) findViewById(R.id.bPower);
+        bPower = (ImageButton) findViewById(R.id.bPower);
         bPower.setOnClickListener(this);
-        bVolumeUp = (Button) findViewById(R.id.bVolUp);
+        bVolumeUp = (ImageButton) findViewById(R.id.bVolUp);
         bVolumeUp.setOnClickListener(this);
-        bVolumeDown = (Button) findViewById(R.id.bVolDown);
+        bVolumeDown = (ImageButton) findViewById(R.id.bVolDown);
         bVolumeDown.setOnClickListener(this);
-        bChannelUp = (Button) findViewById(R.id.bChannelUp);
+        bChannelUp = (ImageButton) findViewById(R.id.bChannelUp);
         bChannelUp.setOnClickListener(this);
-        bChannelDown = (Button) findViewById(R.id.bChannelDown);
+        bChannelDown = (ImageButton) findViewById(R.id.bChannelDown);
         bChannelDown.setOnClickListener(this);
-        bDigits = (Button) findViewById(R.id.bDigits);
+        bDigits = (ImageButton) findViewById(R.id.bDigits);
         bDigits.setOnClickListener(this);
         deviceSpinner = (Spinner) findViewById(R.id.spinner_devices);
         deviceSpinner.setOnItemSelectedListener(this);

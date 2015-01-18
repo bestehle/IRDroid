@@ -15,8 +15,8 @@
         android:title="@string/secure_connect"
         app:showAsAction="ifRoom" />
 
-    <item
-        android:id="@+id/discoverable"
-        android:title="@string/discoverable"
-        app:showAsAction="never" />
+    <!--<item-->
+        <!--android:id="@+id/discoverable"-->
+        <!--android:title="@string/discoverable"-->
+        <!--app:showAsAction="never" />-->
 </menu>

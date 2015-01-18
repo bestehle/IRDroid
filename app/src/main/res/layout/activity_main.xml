@@ -5,59 +5,60 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity" >
 
-    <Button
+    <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/button_power"
+        android:src="@drawable/power_selector"
+        android:background="@null"
         android:id="@+id/bPower"
+        android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_marginTop="20dp" />
 
-    <Button
+    <ImageButton
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/button_plus"
+        android:src="@drawable/plus_selector"
+        android:background="@null"
         android:id="@+id/bVolUp"
         android:layout_below="@+id/bPower"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="53dp" />
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp" />
 
-    <Button
+    <ImageButton
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/button_minus"
+        android:src="@drawable/minus_selector"
+        android:background="@null"
         android:id="@+id/bVolDown"
-        android:layout_centerVertical="true"
-        android:layout_alignParentStart="true" />
+        android:layout_below="@+id/bVolUp"
+        android:layout_alignStart="@+id/bVolUp"
+        android:layout_marginTop="20dp" />
 
-    <Button
+    <ImageButton
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/button_plus"
+        android:src="@drawable/up_selector"
+        android:background="@null"
         android:id="@+id/bChannelUp"
         android:layout_alignBottom="@+id/bVolUp"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="10dp" />
 
-    <Button
+    <ImageButton
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/button_minus"
+        android:src="@drawable/down_selector"
+        android:background="@null"
         android:id="@+id/bChannelDown"
         android:layout_alignBottom="@+id/bVolDown"
-        android:layout_alignParentEnd="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Log Devices"
-        android:id="@+id/button_logDevices"
-        android:onClick="logDevices"
-        android:layout_above="@+id/spinner_devices"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="10dp" />
 
     <Spinner
         android:layout_width="fill_parent"
@@ -66,12 +67,14 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true" />
 
-    <Button
+    <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/button_digits"
+        android:src="@drawable/numbers_selector"
+        android:background="@null"
         android:id="@+id/bDigits"
-        android:layout_above="@+id/button_logDevices"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@+id/bVolDown"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
 
 </RelativeLayout>

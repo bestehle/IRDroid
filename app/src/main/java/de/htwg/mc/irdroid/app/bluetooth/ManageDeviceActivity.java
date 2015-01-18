@@ -256,28 +256,28 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
                 startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
                 return true;
             }
-            case R.id.discoverable: {
-                // Ensure this device is discoverable by others
-                ensureDiscoverable();
-                return true;
-            }
+//            case R.id.discoverable: {
+//                // Ensure this device is discoverable by others
+//                ensureDiscoverable();
+//                return true;
+//            }
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
 
-    /**
-     * Makes this device discoverable.
-     */
-    private void ensureDiscoverable() {
-        if (mBluetoothAdapter.getScanMode() !=
-                BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
-            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-            startActivity(discoverableIntent);
-        }
-    }
+//    /**
+//     * Makes this device discoverable.
+//     */
+//    private void ensureDiscoverable() {
+//        if (mBluetoothAdapter.getScanMode() !=
+//                BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+//            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+//            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+//            startActivity(discoverableIntent);
+//        }
+//    }
 
     /**
      * ask for new device name in popup
