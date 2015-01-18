@@ -95,6 +95,26 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
                     BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
+
+        mGattUpdateReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                final String action = intent.getAction();
+
+                switch (action) {
+                    case RBLService.ACTION_GATT_DISCONNECTED:
+                        Log.i(TAG, "Received code: " + code.toString());
+                        Toast.makeText(getBaseContext(), "Received code !", Toast.LENGTH_SHORT).show();
+                        break;
+                    case RBLService.ACTION_GATT_SERVICES_DISCOVERED:
+                        getGattService(mBluetoothLeService.getSupportedGattService());
+                        break;
+                    case RBLService.ACTION_DATA_AVAILABLE:
+                        storeData(intent.getByteArrayExtra(RBLService.EXTRA_DATA));
+                        break;
+                }
+            }
+        };
     }
 
     private void setupBtConnection(Intent data) {
@@ -128,26 +148,6 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
             }
         };
 
-        mGattUpdateReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                final String action = intent.getAction();
-
-                switch (action) {
-                    case RBLService.ACTION_GATT_DISCONNECTED:
-                        Log.i(TAG, "Received code: " + code.toString());
-                        Toast.makeText(getBaseContext(), "Received code !", Toast.LENGTH_SHORT).show();
-                        break;
-                    case RBLService.ACTION_GATT_SERVICES_DISCOVERED:
-                        getGattService(mBluetoothLeService.getSupportedGattService());
-                        break;
-                    case RBLService.ACTION_DATA_AVAILABLE:
-                        storeData(intent.getByteArrayExtra(RBLService.EXTRA_DATA));
-                        break;
-                }
-            }
-        };
-
         Intent gattServiceIntent = new Intent(this, RBLService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
     }
@@ -177,7 +177,6 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
     @Override
     protected void onResume() {
         super.onResume();
-
         registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
     }
 
@@ -197,7 +196,9 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
     protected void onDestroy() {
         super.onDestroy();
 
-        unregisterReceiver(mGattUpdateReceiver);
+        if (mGattUpdateReceiver != null) {
+            unregisterReceiver(mGattUpdateReceiver);
+        }
 
         if (mBluetoothLeService != null) {
             mBluetoothLeService.disconnect();
@@ -360,6 +361,7 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
         Command command = new Command(frequency, pattern);
         device.addCommand(currentCommandType, command);
         deviceRepository.update(device);
+        Log.i(TAG, "updated device: " + device.getName() + " with command: " + currentCommandType.name());
     }
 
     @Override
