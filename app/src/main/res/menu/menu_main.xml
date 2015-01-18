@@ -6,7 +6,4 @@
         android:icon="@drawable/ic_action_edit"
         android:title="@string/menu_manage_devices"
         app:showAsAction="always" />
-
-    <!--<item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />-->
 </menu>

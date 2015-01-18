@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="menu_add_new_device">Neues Gerät hinzufügen</string>
-    <string name="menu_manage_devices">Geräte verwalten</string>
-    <string name="add_device">Gerät hinzufügen</string>
-    <string name="button_cancel">Abbrechen</string>
+    <string name="menu_add_new_device">Add Device</string>
+    <string name="menu_manage_devices">Manage Device</string>
+    <string name="add_device">Add Device</string>
+    <string name="button_cancel">Cancel</string>
 </resources>
