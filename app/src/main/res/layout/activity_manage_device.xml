@@ -22,10 +22,4 @@
         android:layout_centerHorizontal="true"
         android:text="@string/button_power"
         android:onClick="attemptSetCommand"/>
-
-    <FrameLayout
-        android:id="@+id/sample_content_fragment"
-        android:layout_width="match_parent"
-        android:layout_height="0px"
-        android:layout_weight="2" />
 </RelativeLayout>

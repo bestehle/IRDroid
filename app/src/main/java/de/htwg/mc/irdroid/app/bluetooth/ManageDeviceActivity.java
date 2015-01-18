@@ -49,8 +49,8 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
     private RBLService mBluetoothLeService;
     private static final int REQUEST_ENABLE_BT = 1;
     private static final long SCAN_PERIOD = 3000;
-    private Map<UUID, BluetoothGattCharacteristic> map = new HashMap<UUID, BluetoothGattCharacteristic>();
-    public static List<BluetoothDevice> mDevices = new ArrayList<BluetoothDevice>();
+    private Map<UUID, BluetoothGattCharacteristic> map = new HashMap<>();
+    public static List<BluetoothDevice> mDevices = new ArrayList<>();
 
     private String mDeviceName;
     private String mDeviceAddress;
@@ -68,13 +68,36 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
     private Spinner deviceSpinner;
     private CommandType currentCommandType;
 
-    private ServiceConnection mServiceConnection;
-
     private BroadcastReceiver mGattUpdateReceiver;
 
     private StringBuilder code = new StringBuilder();
 
-    private void createStuff(Intent data) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_manage_device);
+
+        deviceSpinner = (Spinner) findViewById(R.id.spinner_manage_device);
+        deviceSpinner.setOnItemSelectedListener(this);
+        updateSpinner();
+
+        final BluetoothManager mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        mBluetoothAdapter = mBluetoothManager.getAdapter();
+        if (mBluetoothAdapter == null) {
+            Toast.makeText(this, "Ble not supported", Toast.LENGTH_SHORT)
+                    .show();
+            finish();
+            return;
+        }
+
+        if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(
+                    BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
+    }
+
+    private void setupBtConnection(Intent data) {
 
         String address = data.getExtras()
                 .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
@@ -84,7 +107,7 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
         mDeviceName = device.getName();
         mDeviceAddress = device.getAddress();
 
-        mServiceConnection = new ServiceConnection() {
+        ServiceConnection mServiceConnection = new ServiceConnection() {
 
             @Override
             public void onServiceConnected(ComponentName componentName,
@@ -110,14 +133,17 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
             public void onReceive(Context context, Intent intent) {
                 final String action = intent.getAction();
 
-                if (RBLService.ACTION_GATT_DISCONNECTED.equals(action)) {
-                    Log.i(TAG, "Received code: " + code.toString());
-                    Toast.makeText(getBaseContext(), "Received code !", Toast.LENGTH_SHORT);
-                } else if (RBLService.ACTION_GATT_SERVICES_DISCOVERED
-                        .equals(action)) {
-                    getGattService(mBluetoothLeService.getSupportedGattService());
-                } else if (RBLService.ACTION_DATA_AVAILABLE.equals(action)) {
-                    storeData(intent.getByteArrayExtra(RBLService.EXTRA_DATA));
+                switch (action) {
+                    case RBLService.ACTION_GATT_DISCONNECTED:
+                        Log.i(TAG, "Received code: " + code.toString());
+                        Toast.makeText(getBaseContext(), "Received code !", Toast.LENGTH_SHORT).show();
+                        break;
+                    case RBLService.ACTION_GATT_SERVICES_DISCOVERED:
+                        getGattService(mBluetoothLeService.getSupportedGattService());
+                        break;
+                    case RBLService.ACTION_DATA_AVAILABLE:
+                        storeData(intent.getByteArrayExtra(RBLService.EXTRA_DATA));
+                        break;
                 }
             }
         };
@@ -130,33 +156,6 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
     private void storeData(byte[] byteArrayExtra) {
         Log.e("BLE DATA", new String(byteArrayExtra));
         code.append(new String(byteArrayExtra));
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manage_device);
-
-        deviceSpinner = (Spinner) findViewById(R.id.spinner_manage_device);
-        deviceSpinner.setOnItemSelectedListener(this);
-        updateSpinner();
-
-        final BluetoothManager mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        mBluetoothAdapter = mBluetoothManager.getAdapter();
-        if (mBluetoothAdapter == null) {
-            Toast.makeText(this, "Ble not supported", Toast.LENGTH_SHORT)
-                    .show();
-            finish();
-            return;
-        }
-
-        if (!mBluetoothAdapter.isEnabled()) {
-            Intent enableBtIntent = new Intent(
-                    BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-        }
-
-
     }
 
     private void getGattService(BluetoothGattService gattService) {
@@ -209,13 +208,11 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
-        boolean secure = false;
         switch (requestCode) {
             case REQUEST_CONNECT_DEVICE_SECURE:
-                secure = true;
             case REQUEST_CONNECT_DEVICE_INSECURE:
                 if (resultCode == Activity.RESULT_OK) {
-                    createStuff(data);
+                    setupBtConnection(data);
                 }
                 break;
 //            case REQUEST_ENABLE_BT:
@@ -255,12 +252,6 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
                 // Launch the DeviceListActivity to see devices and do scan
                 Intent serverIntent = new Intent(this, DeviceListActivity.class);
                 startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
-                return true;
-            }
-            case R.id.insecure_connect_scan: {
-                // Launch the DeviceListActivity to see devices and do scan
-                Intent serverIntent = new Intent(this, DeviceListActivity.class);
-                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
                 return true;
             }
             case R.id.discoverable: {
@@ -341,7 +332,6 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
             case R.id.bManagePower:
                 currentCommandType = CommandType.power;
                 addCommandToCurrentDevice(code.toString());
-                // FIXME wait for connection and data
                 Log.i(TAG, "managing power button for device " + device);
                 break;
             default:
