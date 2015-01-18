@@ -154,7 +154,7 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
 
 
     private void storeData(byte[] byteArrayExtra) {
-        Log.e("BLE DATA", new String(byteArrayExtra));
+        Log.d("BLE DATA", new String(byteArrayExtra));
         code.append(new String(byteArrayExtra));
     }
 
@@ -209,24 +209,25 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case REQUEST_CONNECT_DEVICE_SECURE:
             case REQUEST_CONNECT_DEVICE_INSECURE:
+                // should not be possible, just to be sure
+            case REQUEST_CONNECT_DEVICE_SECURE:
                 if (resultCode == Activity.RESULT_OK) {
                     setupBtConnection(data);
                 }
                 break;
-//            case REQUEST_ENABLE_BT:
-//                // When the request to enable Bluetooth returns
-//                if (resultCode == Activity.RESULT_OK) {
-//                    // Bluetooth is now enabled, so set up a chat session
-//                    setupBluetoothService();
-//                } else {
-//                    // User did not enable Bluetooth or an error occurred
-//                    Log.d(TAG, "BT not enabled");
-//                    Toast.makeText(this, R.string.bt_not_enabled_leaving,
-//                            Toast.LENGTH_SHORT).show();
-//                    //getActivity().finish();
-//                }
+            /*case REQUEST_ENABLE_BT:
+                // When the request to enable Bluetooth returns
+                if (resultCode == Activity.RESULT_OK) {
+                    // Bluetooth is now enabled, so set up a chat session
+                    setupBluetoothService();
+                } else {
+                    // User did not enable Bluetooth or an error occurred
+                    Log.d(TAG, "BT not enabled");
+                    Toast.makeText(this, R.string.bt_not_enabled_leaving,
+                            Toast.LENGTH_SHORT).show();
+                    //getActivity().finish();
+                }*/
         }
     }
 
@@ -318,8 +319,6 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
         Device newDevice = new Device(name);
         deviceRepository.create(newDevice);
         updateSpinner();
-        //device = newDevice;
-        // TODO set selected spinner item to new device
     }
 
     /**

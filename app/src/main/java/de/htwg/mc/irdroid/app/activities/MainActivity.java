@@ -64,16 +64,19 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         bDigits.setOnClickListener(this);
         deviceSpinner = (Spinner) findViewById(R.id.spinner_devices);
         deviceSpinner.setOnItemSelectedListener(this);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         deviceRepository = Provider.getInstance().getFactory().provideDevice();
-
         updateView();
     }
 
     private void updateView() {
         List<Device> tDevices = deviceRepository.read(new DeviceAllSpecification());
         if (devices == null || devices.size() != tDevices.size()) {
-            devices = deviceRepository.read(new DeviceAllSpecification());
+            devices = tDevices;
             ArrayAdapter<Device> adapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, devices);
             //adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
             deviceSpinner.setAdapter(adapter);
@@ -113,8 +116,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         }
     }
 
-    //
-
     @Override
     public void onClick(View v) {
         Command command = null;
@@ -134,18 +135,18 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             case R.id.bChannelDown:
                 command = device.getCommand(CommandType.channelDown);
                 break;
-           /* case R.id.bDigits:
+            case R.id.bDigits:
                 showDigitsField();
-                break;*/
+                break;
             default:
-
                 break;
         }
 
         if (command != null) {
             ir.sendCode(command.getFrequency(), command.getIrCommand());
+        } else {
+            Log.w(TAG, "unknown command");
         }
-
     }
 
     public void logDevices(View view) {
@@ -158,6 +159,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
     private void showDigitsField() {
         Command command = commandMap.get(CommandType.digits);
+        Log.w(TAG, "to be implemented: show digit field");
     }
 
     @Override
