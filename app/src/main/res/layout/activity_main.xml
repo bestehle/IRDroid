@@ -1,12 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity">
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity" >
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -16,8 +13,7 @@
         android:id="@+id/bPower"
         android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="20dp"
-        android:onClick="attemptSetCommand" />
+        android:layout_marginTop="20dp" />
 
     <ImageButton
         style="?android:attr/buttonStyleSmall"
@@ -26,7 +22,6 @@
         android:src="@drawable/plus_selector"
         android:background="@null"
         android:id="@+id/bVolUp"
-        android:onClick="attemptSetCommand"
         android:layout_below="@+id/bPower"
         android:layout_alignParentStart="true"
         android:layout_marginLeft="10dp"
@@ -39,7 +34,6 @@
         android:src="@drawable/minus_selector"
         android:background="@null"
         android:id="@+id/bVolDown"
-        android:onClick="attemptSetCommand"
         android:layout_below="@+id/bVolUp"
         android:layout_alignStart="@+id/bVolUp"
         android:layout_marginTop="20dp" />
@@ -51,7 +45,6 @@
         android:src="@drawable/up_selector"
         android:background="@null"
         android:id="@+id/bChannelUp"
-        android:onClick="attemptSetCommand"
         android:layout_alignBottom="@+id/bVolUp"
         android:layout_alignParentEnd="true"
         android:layout_marginRight="10dp" />
@@ -63,7 +56,6 @@
         android:src="@drawable/down_selector"
         android:background="@null"
         android:id="@+id/bChannelDown"
-        android:onClick="attemptSetCommand"
         android:layout_alignBottom="@+id/bVolDown"
         android:layout_alignParentEnd="true"
         android:layout_marginRight="10dp" />
@@ -81,7 +73,6 @@
         android:src="@drawable/numbers_selector"
         android:background="@null"
         android:id="@+id/bDigits"
-        android:onClick="attemptSetCommand"
         android:layout_below="@+id/bVolDown"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp" />
