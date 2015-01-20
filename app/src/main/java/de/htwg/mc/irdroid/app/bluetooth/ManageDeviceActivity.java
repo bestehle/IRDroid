@@ -2,6 +2,7 @@ package de.htwg.mc.irdroid.app.bluetooth;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -52,8 +53,12 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
     private Map<UUID, BluetoothGattCharacteristic> map = new HashMap<>();
     public static List<BluetoothDevice> mDevices = new ArrayList<>();
 
+    final Activity  thisContext = this;
+
     private String mDeviceName;
     private String mDeviceAddress;
+
+    private ProgressDialog progress;
 
 
     private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
@@ -86,9 +91,10 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
         if (mBluetoothAdapter == null) {
             Toast.makeText(this, "Ble not supported", Toast.LENGTH_SHORT)
                     .show();
-            finish();
+//            finish();
             return;
         }
+
 
         if (!mBluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(
@@ -104,12 +110,16 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
                 switch (action) {
                     case RBLService.ACTION_GATT_DISCONNECTED:
                         Log.i(TAG, "Received code: " + code.toString());
-                        Toast.makeText(getBaseContext(), "Received code !", Toast.LENGTH_SHORT).show();
+                        if (progress != null) {
+                            progress.dismiss();
+                        }
+                        Toast.makeText(context, "Received code !", Toast.LENGTH_SHORT).show();
                         break;
                     case RBLService.ACTION_GATT_SERVICES_DISCOVERED:
                         getGattService(mBluetoothLeService.getSupportedGattService());
                         break;
                     case RBLService.ACTION_DATA_AVAILABLE:
+                        if (progress != null)
                         storeData(intent.getByteArrayExtra(RBLService.EXTRA_DATA));
                         break;
                 }
@@ -126,6 +136,9 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
 
         mDeviceName = device.getName();
         mDeviceAddress = device.getAddress();
+
+        progress = ProgressDialog.show(thisContext, "Receive BLE",
+                "Receive IR Code from arduino");
 
         ServiceConnection mServiceConnection = new ServiceConnection() {
 
@@ -372,6 +385,10 @@ public class ManageDeviceActivity extends ActionBarActivity implements AdapterVi
      */
     private void addCommandToCurrentDevice(String commandString) {
         List<String> list = new ArrayList<>(Arrays.asList(commandString.split(" ")));
+        if (list.isEmpty()) {
+            Toast.makeText(this, "No valid IR code reveived", Toast.LENGTH_SHORT);
+            return;
+        }
         list.remove(0); // dummy
         int frequency = (int) (1000000 / ((Integer.parseInt(list.remove(0), 16) * 0.241246)));
         list.remove(0); // seq1
