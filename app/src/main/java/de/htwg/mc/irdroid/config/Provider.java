@@ -2,6 +2,7 @@ package de.htwg.mc.irdroid.config;
 
 import android.content.Context;
 
+import de.htwg.mc.irdroid.config.module.CbFactory;
 import de.htwg.mc.irdroid.config.module.MockWithDataFactory;
 
 /**
@@ -34,8 +35,8 @@ public class Provider {
                      * Switch the implementation here.
                      */
                     //this.factory = new MockFactory(context);
-                    //this.factory = new CbFactory(context);
-                    this.factory = new MockWithDataFactory(context);
+                    this.factory = new CbFactory(context);
+//                    this.factory = new MockWithDataFactory(context);
                 }
             }
         }

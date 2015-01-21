@@ -43,4 +43,6 @@ public interface Factory {
 //     */
 //    Repository<SpecificExercise> provideSpecificExercise();
 
+    public void generateDummyCommands();
+
 }

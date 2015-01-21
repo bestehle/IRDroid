@@ -76,6 +76,13 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
     private void updateView() {
         List<Device> tDevices = deviceRepository.read(new DeviceAllSpecification());
+        Log.i(TAG, "Devices available :" + tDevices.size());
+
+//        if (tDevices.isEmpty()) {
+//            Provider.getInstance().getFactory().generateDummyCommands();
+//            tDevices = deviceRepository.read(new DeviceAllSpecification());
+//        }
+
         if (devices == null || devices.size() != tDevices.size()) {
             devices = tDevices;
             ArrayAdapter<Device> adapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, devices);
@@ -84,6 +91,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             device = (Device) deviceSpinner.getSelectedItem();
         }
 
+        if (device == null)
+            return;
         commandMap = device.getCommandMap();
 
         bPower.setEnabled(commandMap.containsKey(CommandType.power));

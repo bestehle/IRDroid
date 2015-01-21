@@ -53,7 +53,7 @@ public class MockWithDataFactory implements Factory {
         return deviceRepository;
     }
 
-    private void generateDummyCommands() {
+    public void generateDummyCommands() {
 
         String samsungPower = "0000 006d 0022 0003 00a9 00a8 0015 003f 0015 003f 0015 003f 0015 0015 0015"
                 + " 0015 0015 0015 0015 0015 0015 0015 0015 003f 0015 003f 0015 003f 0015 0015 0015 0015 0015 0015"
