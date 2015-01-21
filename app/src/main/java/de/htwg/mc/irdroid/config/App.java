@@ -9,8 +9,8 @@ import de.htwg.mc.irdroid.app.LoginTask;
  * Provider class with the Context of the application.
  */
 public class App extends Application {
-    private final static String EMAIL = "user@email";
-    private final static String PASSWORD = "user_pw";
+    private final static String EMAIL = "user1";
+    private final static String PASSWORD = "1234";
     private LoginTask login = null;
 
     @Override
